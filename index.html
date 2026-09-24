@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nikssxelo OS</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <!-- BOOT SCREEN -->
+  <div id="boot">
+    <div class="boot-logo">
+      NIKSSXELO<span>OS</span>
+    </div>
+
+    <div class="boot-sub">Starting system...</div>
+
+    <div class="boot-bar">
+      <div id="boot-progress"></div>
+    </div>
+  </div>
+
+
+  <!-- DESKTOP -->
+  <main id="desktop" class="hidden">
+
+    <!-- Desktop icons -->
+    <div class="desktop-icons">
+
+      <button class="desktop-icon" data-open="files">
+        <span>📁</span>
+        <b>Files</b>
+      </button>
+
+      <button class="desktop-icon" data-open="notes">
+        <span>📝</span>
+        <b>Notes</b>
+      </button>
+
+      <button class="desktop-icon" data-open="terminal">
+        <span>⌘</span>
+        <b>Terminal</b>
+      </button>
+
+      <button class="desktop-icon" data-open="settings">
+        <span>⚙️</span>
+        <b>Settings</b>
+      </button>
+
+    </div>
+
+
+    <!-- FILES -->
+    <section
+      id="window-files"
+      class="window"
+      style="left:90px;top:70px;width:520px;height:360px"
+    >
+
+      <header class="titlebar">
+        <strong>📁 Files</strong>
+
+        <div>
+          <button class="min">—</button>
+          <button class="close">×</button>
+        </div>
+      </header>
+
+      <div class="window-content file-manager">
+
+        <aside>
+          <button class="side active">Home</button>
+          <button class="side">Documents</button>
+          <button class="side">Music</button>
+        </aside>
+
+        <div class="files-grid">
+
+          <div class="file">
+            📄
+            <span>Welcome.txt</span>
+          </div>
+
+          <div class="file">
+            📁
+            <span>Projects</span>
+          </div>
+
+          <div class="file">
+            🎵
+            <span>Music</span>
+          </div>
+
+          <div class="file">
+            🖼️
+            <span>Wallpapers</span>
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- NOTES -->
+    <section
+      id="window-notes"
+      class="window"
+      style="left:150px;top:110px;width:560px;height:390px"
+    >
+
+      <header class="titlebar">
+
+        <strong>📝 Notes</strong>
+
+        <div>
+          <button class="min">—</button>
+          <button class="close">×</button>
+        </div>
+
+      </header>
+
+      <div class="window-content notes">
+
+        <textarea
+          id="notes"
+          placeholder="Write something..."
+        ></textarea>
+
+      </div>
+
+    </section>
+
+
+    <!-- TERMINAL -->
+    <section
+      id="window-terminal"
+      class="window"
+      style="left:220px;top:90px;width:610px;height:390px"
+    >
+
+      <header class="titlebar">
+
+        <strong>⌘ Terminal</strong>
+
+        <div>
+          <button class="min">—</button>
+          <button class="close">×</button>
+        </div>
+
+      </header>
+
+      <div class="terminal">
+
+        <div id="terminal-output">
+          Nikssxelo OS Terminal v1.0<br>
+          Type <b>help</b> for commands.
+        </div>
+
+        <div class="terminal-input">
+
+          <span>nikssxelo@os:~$</span>
+
+          <input
+            id="command"
+            autocomplete="off"
+            autofocus
+          >
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- SETTINGS -->
+    <section
+      id="window-settings"
+      class="window"
+      style="left:300px;top:130px;width:430px;height:340px"
+    >
+
+      <header class="titlebar">
+
+        <strong>⚙️ Settings</strong>
+
+        <div>
+          <button class="min">—</button>
+          <button class="close">×</button>
+        </div>
+
+      </header>
+
+      <div class="window-content settings">
+
+        <h2>Appearance</h2>
+
+        <label>
+          Accent
+          <input
+            id="accent"
+            type="color"
+            value="#5b8cff"
+          >
+        </label>
+
+        <label>
+          Wallpaper
+
+          <select id="wallpaper">
+            <option value="night">Night</option>
+            <option value="blue">Blue</option>
+            <option value="void">Void</option>
+          </select>
+
+        </label>
+
+        <button id="reset">
+          Reset settings
+        </button>
+
+      </div>
+
+    </section>
+
+
+    <!-- TASKBAR -->
+    <div id="taskbar">
+
+      <button id="start">
+        ✦
+      </button>
+
+      <div id="task-apps"></div>
+
+      <div id="clock"></div>
+
+    </div>
+
+
+    <!-- START MENU -->
+    <div id="start-menu" class="hidden">
+
+      <div class="start-title">
+        NIKSSXELO OS
+      </div>
+
+      <button data-open="files">
+        📁 Files
+      </button>
+
+      <button data-open="notes">
+        📝 Notes
+      </button>
+
+      <button data-open="terminal">
+        ⌘ Terminal
+      </button>
+
+      <button data-open="settings">
+        ⚙️ Settings
+      </button>
+
+    </div>
+
+  </main>
+
+  <script src="script.js"></script>
+
+</body>
+  </html>
