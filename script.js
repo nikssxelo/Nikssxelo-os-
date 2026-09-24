@@ -1,142 +1,154 @@
 const desktop = document.getElementById("desktop");
 
-const windows = {
-  files: document.getElementById("window-files"),
-  notes: document.getElementById("window-notes"),
-  terminal: document.getElementById("window-terminal"),
-  settings: document.getElementById("window-settings")
-};
+const windows = [
+  "files",
+  "notes",
+  "calculator",
+  "terminal",
+  "settings",
+  "about"
+];
 
-const taskApps = document.getElementById("task-apps");
-
-let z = 10;
-
-let openApps = new Set();
+let zIndex = 20;
 
 
-/* ================= APP MANAGEMENT ================= */
+/* ================= BOOT ================= */
+
+let progress = 0;
+
+const bootTimer = setInterval(() => {
+
+  progress += 2;
+
+  document.getElementById("progress")
+    .style.width = progress + "%";
+
+  if (progress >= 100) {
+
+    clearInterval(bootTimer);
+
+    setTimeout(() => {
+
+      document.getElementById("boot")
+        .remove();
+
+      desktop.classList.remove("hidden");
+
+    }, 300);
+
+  }
+
+}, 35);
+
+
+/* ================= OPEN APP ================= */
 
 function openApp(name) {
 
-  const w = windows[name];
+  const win = document.getElementById(name);
 
-  if (!w) return;
+  if (!win) return;
 
-  w.classList.add("open");
+  win.classList.add("open");
 
-  w.classList.remove("minimized");
+  win.classList.remove("minimized");
 
-  w.style.zIndex = ++z;
+  win.style.zIndex = ++zIndex;
 
-  openApps.add(name);
+  updateTasks();
 
-  refreshTasks();
 }
 
+
+/* ================= CLOSE ================= */
 
 function closeApp(name) {
 
-  windows[name].classList.remove(
+  const win = document.getElementById(name);
+
+  win.classList.remove(
     "open",
-    "minimized"
+    "minimized",
+    "maximized"
   );
 
-  openApps.delete(name);
+  updateTasks();
 
-  refreshTasks();
 }
 
+
+/* ================= MINIMIZE ================= */
 
 function minimizeApp(name) {
 
-  windows[name].classList.add("minimized");
+  document
+    .getElementById(name)
+    .classList.add("minimized");
 
-  refreshTasks();
-}
-
-
-/* ================= TASKBAR ================= */
-
-function refreshTasks() {
-
-  taskApps.innerHTML = "";
-
-  [...openApps].forEach(name => {
-
-    const button =
-      document.createElement("button");
-
-    button.className = "task active";
-
-    button.textContent = {
-
-      files: "📁 Files",
-      notes: "📝 Notes",
-      terminal: "⌘ Terminal",
-      settings: "⚙️ Settings"
-
-    }[name];
-
-
-    button.onclick = () => {
-
-      const w = windows[name];
-
-      w.classList.toggle("minimized");
-
-      if (!w.classList.contains("minimized")) {
-        w.style.zIndex = ++z;
-      }
-
-    };
-
-
-    taskApps.appendChild(button);
-
-  });
+  updateTasks();
 
 }
 
 
-/* ================= OPEN BUTTONS ================= */
+/* ================= MAXIMIZE ================= */
+
+function maximizeApp(name) {
+
+  const win = document.getElementById(name);
+
+  win.classList.toggle("maximized");
+
+  win.style.zIndex = ++zIndex;
+
+}
+
+
+/* ================= APP BUTTONS ================= */
 
 document
-  .querySelectorAll("[data-open]")
+  .querySelectorAll("[data-app]")
   .forEach(button => {
 
-    button.addEventListener(
-      "click",
-      () => {
+    button.addEventListener("click", () => {
 
-        openApp(button.dataset.open);
+      openApp(button.dataset.app);
 
-        document
-          .getElementById("start-menu")
-          .classList.add("hidden");
+      document
+        .getElementById("startMenu")
+        .classList.add("hidden");
 
-      }
-    );
+      document
+        .getElementById("desktopMenu")
+        .classList.add("hidden");
+
+    });
 
   });
 
 
-/* ================= WINDOW CONTROLS ================= */
+/* ================= WINDOW BUTTONS ================= */
 
-Object.entries(windows).forEach(
-  ([name, w]) => {
+document
+  .querySelectorAll(".window")
+  .forEach(win => {
 
-    w.querySelector(".close")
+    const name = win.id;
+
+    win.querySelector(".close")
       .onclick = () => closeApp(name);
 
-    w.querySelector(".min")
+    win.querySelector(".min")
       .onclick = () => minimizeApp(name);
 
+    win.querySelector(".max")
+      .onclick = () => maximizeApp(name);
 
-    w.addEventListener(
+
+    win.addEventListener(
       "mousedown",
       () => {
 
-        w.style.zIndex = ++z;
+        win.style.zIndex = ++zIndex;
 
       }
     );
@@ -144,29 +156,38 @@ Object.entries(windows).forEach(
 
     /* DRAGGING */
 
-    const bar = w.querySelector(".titlebar");
+    const titlebar =
+      win.querySelector(".titlebar");
 
     let dragging = false;
 
-    let dx = 0;
-    let dy = 0;
+    let offsetX = 0;
+    let offsetY = 0;
 
 
-    bar.addEventListener(
+    titlebar.addEventListener(
       "pointerdown",
       event => {
 
+        if (
+          event.target.tagName === "BUTTON"
+        ) return;
+
+        if (
+          win.classList.contains("maximized")
+        ) return;
+
         dragging = true;
 
-        dx =
+        offsetX =
           event.clientX -
-          w.offsetLeft;
+          win.offsetLeft;
 
-        dy =
+        offsetY =
           event.clientY -
-          w.offsetTop;
+          win.offsetTop;
 
-        bar.setPointerCapture(
+        titlebar.setPointerCapture(
           event.pointerId
         );
 
@@ -174,39 +195,38 @@ Object.entries(windows).forEach(
     );
 
 
-    bar.addEventListener(
+    titlebar.addEventListener(
       "pointermove",
       event => {
 
         if (!dragging) return;
 
-
         const maxX =
           innerWidth -
-          w.offsetWidth;
+          win.offsetWidth;
 
         const maxY =
           innerHeight -
-          80 -
-          w.offsetHeight;
+          70 -
+          win.offsetHeight;
 
 
-        w.style.left =
+        win.style.left =
           Math.max(
             0,
             Math.min(
               maxX,
-              event.clientX - dx
+              event.clientX - offsetX
             )
           ) + "px";
 
 
-        w.style.top =
+        win.style.top =
           Math.max(
             0,
             Math.min(
               maxY,
-              event.clientY - dy
+              event.clientY - offsetY
             )
           ) + "px";
 
@@ -214,7 +234,7 @@ Object.entries(windows).forEach(
     );
 
 
-    bar.addEventListener(
+    titlebar.addEventListener(
       "pointerup",
       () => {
 
@@ -223,36 +243,103 @@ Object.entries(windows).forEach(
       }
     );
 
-  }
-);
+  });
+
+
+/* ================= TASKBAR ================= */
+
+function updateTasks() {
+
+  const container =
+    document.getElementById("taskApps");
+
+  container.innerHTML = "";
+
+  windows.forEach(name => {
+
+    const win =
+      document.getElementById(name);
+
+    if (
+      win.classList.contains("open")
+    ) {
+
+      const button =
+        document.createElement("button");
+
+      button.className = "task";
+
+      const names = {
+
+        files: "📁 Files",
+        notes: "📝 Notes",
+        calculator: "🧮 Calculator",
+        terminal: "⌘ Terminal",
+        settings: "⚙️ Settings",
+        about: "ℹ️ About"
+
+      };
+
+      button.textContent =
+        names[name];
+
+
+      button.onclick = () => {
+
+        if (
+          win.classList.contains("minimized")
+        ) {
+
+          win.classList.remove("minimized");
+
+          win.style.zIndex = ++zIndex;
+
+        } else {
+
+          win.classList.add("minimized");
+
+        }
+
+      };
+
+
+      container.appendChild(button);
+
+    }
+
+  });
+
+}
 
 
 /* ================= START MENU ================= */
 
-const start =
-  document.getElementById("start");
+const startButton =
+  document.getElementById("startButton");
 
-const menu =
-  document.getElementById("start-menu");
+const startMenu =
+  document.getElementById("startMenu");
 
 
-start.onclick = () => {
+startButton.onclick = event => {
 
-  menu.classList.toggle("hidden");
+  event.stopPropagation();
+
+  startMenu.classList.toggle("hidden");
 
 };
 
 
 document.addEventListener(
-  "pointerdown",
+  "click",
   event => {
 
     if (
-      !menu.contains(event.target) &&
-      event.target !== start
+      !startMenu.contains(event.target) &&
+      event.target !== startButton
     ) {
 
-      menu.classList.add("hidden");
+      startMenu.classList.add("hidden");
 
     }
 
@@ -260,43 +347,127 @@ document.addEventListener(
 );
 
 
-/* ================= NOTES ================= */
+/* ================= SEARCH ================= */
 
-const notes =
-  document.getElementById("notes");
+document
+  .getElementById("appSearch")
+  .addEventListener("input", event => {
+
+    const search =
+      event.target.value.toLowerCase();
+
+    document
+      .querySelectorAll("#appList button")
+      .forEach(button => {
+
+        button.style.display =
+          button.textContent
+            .toLowerCase()
+            .includes(search)
+              ? "block"
+              : "none";
+
+      });
+
+  });
 
 
-notes.value =
+/* ================= NOTES STORAGE ================= */
+
+const noteBox =
+  document.getElementById("noteBox");
+
+
+noteBox.value =
   localStorage.getItem(
     "nikssxelo_notes"
   ) || "";
 
 
-notes.addEventListener(
+noteBox.addEventListener(
   "input",
   () => {
 
     localStorage.setItem(
       "nikssxelo_notes",
-      notes.value
+      noteBox.value
     );
 
   }
 );
 
 
+/* ================= CALCULATOR ================= */
+
+const calcDisplay =
+  document.getElementById("calcDisplay");
+
+
+function addCalc(value) {
+
+  calcDisplay.value += value;
+
+}
+
+
+function clearCalc() {
+
+  calcDisplay.value = "";
+
+}
+
+
+function backCalc() {
+
+  calcDisplay.value =
+    calcDisplay.value.slice(0, -1);
+
+}
+
+
+function calculate() {
+
+  try {
+
+    if (!/^[0-9+\-*/.() ]+$/.test(
+      calcDisplay.value
+    )) {
+
+      throw new Error();
+
+    }
+
+    calcDisplay.value =
+      Function(
+        "return " +
+        calcDisplay.value
+      )();
+
+  }
+
+  catch {
+
+    calcDisplay.value = "Error";
+
+  }
+
+}
+
+
 /* ================= TERMINAL ================= */
 
-const output =
+const terminalInput =
   document.getElementById(
-    "terminal-output"
+    "terminalInput"
   );
 
-const command =
-  document.getElementById("command");
+const terminalOutput =
+  document.getElementById(
+    "terminalOutput"
+  );
 
 
-command.addEventListener(
+terminalInput.addEventListener(
   "keydown",
   event => {
 
@@ -304,35 +475,38 @@ command.addEventListener(
       return;
 
 
-    const c =
-      command.value.trim();
+    const command =
+      terminalInput.value.trim()
+        .toLowerCase();
 
-    command.value = "";
+
+    terminalInput.value = "";
 
 
-    output.innerHTML +=
+    terminalOutput.innerHTML +=
       `<br>
       <span style="color:var(--accent)">
       nikssxelo@os:~$
       </span>
-      ${escapeHtml(c)}
+      ${escapeHTML(command)}
       <br>`;
 
 
-    const responses = {
+    const commands = {
 
       help:
-        "Commands: help, clear, date, whoami, apps, neofetch",
+        "Available: help, clear, date, whoami, apps, neofetch, open",
 
       whoami:
-        "nikssxelo — user",
+        "nikssxelo",
 
       apps:
-        "Files | Notes | Terminal | Settings",
+        "Files | Notes | Calculator | Terminal | Settings | About",
 
       neofetch:
-        "NIKSSXELO OS v1.0<br>" +
-        "Browser Kernel • Web UI • Local Storage",
+        "NIKSSXELO OS<br>" +
+        "Browser-based desktop<br>" +
+        "Local Storage enabled",
 
       date:
         new Date().toString()
@@ -340,41 +514,81 @@ command.addEventListener(
     };
 
 
-    if (c === "clear") {
+    if (command === "clear") {
 
-      output.innerHTML = "";
+      terminalOutput.innerHTML = "";
 
-    } else {
+    }
 
-      output.innerHTML +=
+    else if (
+      command.startsWith("open ")
+    ) {
+
+      const app =
+        command.substring(5);
+
+      const aliases = {
+        file: "files",
+        files: "files",
+        note: "notes",
+        notes: "notes",
+        calculator: "calculator",
+        calc: "calculator",
+        terminal: "terminal",
+        settings: "settings",
+        about: "about"
+      };
+
+      if (aliases[app]) {
+
+        openApp(aliases[app]);
+
+        terminalOutput.innerHTML +=
+          "Opening " +
+          escapeHTML(app) +
+          "...<br>";
+
+      }
+
+      else {
+
+        terminalOutput.innerHTML +=
+          "App not found.<br>";
+
+      }
+
+    }
+
+    else {
+
+      terminalOutput.innerHTML +=
         (
-          responses[c] ||
-          `Command not found: ${escapeHtml(c)}`
+          commands[command] ||
+          "Command not found. Type help."
         ) + "<br>";
 
     }
 
 
-    output.parentElement.scrollTop =
-      output.parentElement.scrollHeight;
+    document
+      .querySelector(".terminal")
+      .scrollTop = 99999;
 
   }
 );
 
 
-function escapeHtml(text) {
+function escapeHTML(text) {
 
   return text.replace(
     /[&<>"']/g,
-    character => ({
-
+    char => ({
       "&": "&amp;",
       "<": "&lt;",
       ">": "&gt;",
       '"': "&quot;",
       "'": "&#039;"
-
-    }[character])
+    }[char])
   );
 
 }
@@ -382,44 +596,61 @@ function escapeHtml(text) {
 
 /* ================= SETTINGS ================= */
 
-function applySettings() {
+const accent =
+  document.getElementById("accent");
 
-  const accent =
+const wallpaper =
+  document.getElementById("wallpaper");
+
+
+function loadSettings() {
+
+  const savedAccent =
     localStorage.getItem(
       "nikssxelo_accent"
     ) || "#5b8cff";
 
 
-  const wallpaper =
+  const savedWallpaper =
     localStorage.getItem(
-      "nikssxelo_wall"
+      "nikssxelo_wallpaper"
     ) || "night";
 
 
   desktop.style.setProperty(
     "--accent",
-    accent
+    savedAccent
   );
 
+  accent.value =
+    savedAccent;
 
-  document.getElementById(
-    "accent"
-  ).value = accent;
-
-
-  document.getElementById(
-    "wallpaper"
-  ).value = wallpaper;
+  wallpaper.value =
+    savedWallpaper;
 
 
-  if (wallpaper === "blue") {
+  applyWallpaper(savedWallpaper);
+
+}
+
+
+function applyWallpaper(type) {
+
+  if (type === "blue") {
 
     desktop.style.background =
-      "radial-gradient(circle at 70% 20%, #183c70, #081426 45%, #02050a)";
+      "radial-gradient(circle at 70% 20%,#183f78,#071426 48%,#02040a 80%)";
 
   }
 
-  else if (wallpaper === "void") {
+  else if (type === "purple") {
+
+    desktop.style.background =
+      "radial-gradient(circle at 70% 20%,#42205f,#12091d 45%,#02040a 80%)";
+
+  }
+
+  else if (type === "void") {
 
     desktop.style.background =
       "#020204";
@@ -429,56 +660,60 @@ function applySettings() {
   else {
 
     desktop.style.background =
-      "radial-gradient(circle at 70% 20%, #17264a 0, #0a1020 30%, #03050b 72%)";
+      "radial-gradient(circle at 75% 20%,#1a2d58,#091120 42%,#02040a 80%)";
 
   }
 
 }
 
 
-document.getElementById(
-  "accent"
-).oninput = event => {
+accent.oninput = event => {
 
   localStorage.setItem(
     "nikssxelo_accent",
     event.target.value
   );
 
-  applySettings();
-
-};
-
-
-document.getElementById(
-  "wallpaper"
-).onchange = event => {
-
-  localStorage.setItem(
-    "nikssxelo_wall",
+  desktop.style.setProperty(
+    "--accent",
     event.target.value
   );
 
-  applySettings();
+};
+
+
+wallpaper.onchange = event => {
+
+  localStorage.setItem(
+    "nikssxelo_wallpaper",
+    event.target.value
+  );
+
+  applyWallpaper(
+    event.target.value
+  );
 
 };
 
 
-document.getElementById(
-  "reset"
-).onclick = () => {
+document
+  .getElementById("resetSettings")
+  .onclick = () => {
 
-  localStorage.removeItem(
-    "nikssxelo_accent"
-  );
+    localStorage.removeItem(
+      "nikssxelo_accent"
+    );
 
-  localStorage.removeItem(
-    "nikssxelo_wall"
-  );
+    localStorage.removeItem(
+      "nikssxelo_wallpaper"
+    );
 
-  applySettings();
+    loadSettings();
 
-};
+  };
+
+
+loadSettings();
 
 
 /* ================= CLOCK ================= */
@@ -500,49 +735,157 @@ function updateClock() {
 }
 
 
-setInterval(updateClock, 1000);
+setInterval(
+  updateClock,
+  1000
+);
 
 updateClock();
 
-applySettings();
+
+/* ================= RIGHT CLICK ================= */
+
+const desktopMenu =
+  document.getElementById(
+    "desktopMenu"
+  );
 
 
-/* ================= BOOT ================= */
+desktop.addEventListener(
+  "contextmenu",
+  event => {
 
-let progress = 0;
+    if (
+      event.target.closest(".window") ||
+      event.target.closest("#taskbar")
+    ) return;
 
+    event.preventDefault();
 
-const boot =
-  setInterval(() => {
+    desktopMenu.style.left =
+      Math.min(
+        event.clientX,
+        innerWidth - 200
+      ) + "px";
 
-    progress += 2;
+    desktopMenu.style.top =
+      Math.min(
+        event.clientY,
+        innerHeight - 180
+      ) + "px";
 
+    desktopMenu.classList.remove(
+      "hidden"
+    );
 
-    document.getElementById(
-      "boot-progress"
-    ).style.width =
-      progress + "%";
-
-
-    if (progress >= 100) {
-
-      clearInterval(boot);
-
-
-      setTimeout(() => {
-
-        document
-          .getElementById("boot")
-          .remove();
-
-
-        desktop
-          .classList
-          .remove("hidden");
+  }
+);
 
 
-      }, 250);
+document.addEventListener(
+  "click",
+  () => {
 
-    }
+    desktopMenu.classList.add(
+      "hidden"
+    );
 
-  }, 35);
+  }
+);
+
+
+/* ================= LOCK ================= */
+
+const lockScreen =
+  document.getElementById(
+    "lockScreen"
+  );
+
+
+document
+  .getElementById("lockButton")
+  .onclick = () => {
+
+    startMenu.classList.add("hidden");
+
+    lockScreen.classList.remove(
+      "hidden"
+    );
+
+  };
+
+
+document
+  .getElementById("unlockButton")
+  .onclick = () => {
+
+    lockScreen.classList.add(
+      "hidden"
+    );
+
+  };
+
+
+function updateLockTime() {
+
+  document.getElementById(
+    "lockTime"
+  ).textContent =
+    new Date().toLocaleTimeString(
+      [],
+      {
+        hour: "2-digit",
+        minute: "2-digit"
+      }
+    );
+
+}
+
+
+setInterval(
+  updateLockTime,
+  1000
+);
+
+updateLockTime();
+
+
+/* ================= RESTART ================= */
+
+document
+  .getElementById("restartButton")
+  .onclick = () => {
+
+    location.reload();
+
+  };
+
+
+/* ================= SHUTDOWN ================= */
+
+document
+  .getElementById("shutdownButton")
+  .onclick = () => {
+
+    desktop.innerHTML = `
+      <div style="
+        position:fixed;
+        inset:0;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        background:#02040a;
+        color:#8d98aa;
+        font-size:16px;
+      ">
+        Shutting down...
+      </div>
+    `;
+
+    setTimeout(() => {
+
+      location.reload();
+
+    }, 2500);
+
+  };
