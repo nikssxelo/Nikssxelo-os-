@@ -2,274 +2,358 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>Nikssxelo OS</title>
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-  <!-- BOOT SCREEN -->
-  <div id="boot">
-    <div class="boot-logo">
-      NIKSSXELO<span>OS</span>
+<!-- BOOT -->
+<div id="boot">
+  <div class="logo">NIKSSXELO<span>OS</span></div>
+  <div class="loading">Starting system...</div>
+  <div class="progress"><div id="progress"></div></div>
+</div>
+
+
+<!-- DESKTOP -->
+<div id="desktop" class="hidden">
+
+  <!-- DESKTOP ICONS -->
+  <div class="icons">
+
+    <button class="desktop-icon" data-app="files">
+      <span>📁</span>
+      Files
+    </button>
+
+    <button class="desktop-icon" data-app="notes">
+      <span>📝</span>
+      Notes
+    </button>
+
+    <button class="desktop-icon" data-app="calculator">
+      <span>🧮</span>
+      Calculator
+    </button>
+
+    <button class="desktop-icon" data-app="terminal">
+      <span>⌘</span>
+      Terminal
+    </button>
+
+    <button class="desktop-icon" data-app="settings">
+      <span>⚙️</span>
+      Settings
+    </button>
+
+    <button class="desktop-icon" data-app="about">
+      <span>ℹ️</span>
+      About
+    </button>
+
+  </div>
+
+
+  <!-- FILES -->
+  <div class="window" id="files"
+       style="left:90px;top:70px;width:600px;height:400px">
+
+    <div class="titlebar">
+      <b>📁 Files</b>
+      <div>
+        <button class="min">−</button>
+        <button class="max">□</button>
+        <button class="close">×</button>
+      </div>
     </div>
 
-    <div class="boot-sub">Starting system...</div>
+    <div class="content files">
 
-    <div class="boot-bar">
-      <div id="boot-progress"></div>
+      <div class="sidebar">
+        <button class="selected">🏠 Home</button>
+        <button>📄 Documents</button>
+        <button>🎵 Music</button>
+        <button>🖼️ Pictures</button>
+      </div>
+
+      <div class="file-area">
+
+        <div class="file-item">
+          <div>📄</div>
+          <span>Welcome.txt</span>
+        </div>
+
+        <div class="file-item">
+          <div>📁</div>
+          <span>Projects</span>
+        </div>
+
+        <div class="file-item">
+          <div>🎵</div>
+          <span>Music</span>
+        </div>
+
+        <div class="file-item">
+          <div>🖼️</div>
+          <span>Wallpapers</span>
+        </div>
+
+      </div>
+
     </div>
   </div>
 
 
-  <!-- DESKTOP -->
-  <main id="desktop" class="hidden">
+  <!-- NOTES -->
+  <div class="window" id="notes"
+       style="left:140px;top:90px;width:600px;height:430px">
 
-    <!-- Desktop icons -->
-    <div class="desktop-icons">
+    <div class="titlebar">
+      <b>📝 Notes</b>
 
-      <button class="desktop-icon" data-open="files">
-        <span>📁</span>
-        <b>Files</b>
-      </button>
+      <div>
+        <button class="min">−</button>
+        <button class="max">□</button>
+        <button class="close">×</button>
+      </div>
+    </div>
 
-      <button class="desktop-icon" data-open="notes">
-        <span>📝</span>
-        <b>Notes</b>
-      </button>
+    <div class="content note-content">
+      <textarea id="noteBox"
+        placeholder="Write your notes here..."></textarea>
+    </div>
 
-      <button class="desktop-icon" data-open="terminal">
-        <span>⌘</span>
-        <b>Terminal</b>
-      </button>
+  </div>
 
-      <button class="desktop-icon" data-open="settings">
-        <span>⚙️</span>
-        <b>Settings</b>
+
+  <!-- CALCULATOR -->
+  <div class="window" id="calculator"
+       style="left:220px;top:100px;width:340px;height:470px">
+
+    <div class="titlebar">
+      <b>🧮 Calculator</b>
+
+      <div>
+        <button class="min">−</button>
+        <button class="max">□</button>
+        <button class="close">×</button>
+      </div>
+    </div>
+
+    <div class="calculator">
+
+      <input id="calcDisplay" readonly>
+
+      <div class="calc-buttons">
+
+        <button onclick="clearCalc()">C</button>
+        <button onclick="backCalc()">⌫</button>
+        <button onclick="addCalc('/')">÷</button>
+        <button onclick="addCalc('*')">×</button>
+
+        <button onclick="addCalc('7')">7</button>
+        <button onclick="addCalc('8')">8</button>
+        <button onclick="addCalc('9')">9</button>
+        <button onclick="addCalc('-')">−</button>
+
+        <button onclick="addCalc('4')">4</button>
+        <button onclick="addCalc('5')">5</button>
+        <button onclick="addCalc('6')">6</button>
+        <button onclick="addCalc('+')">+</button>
+
+        <button onclick="addCalc('1')">1</button>
+        <button onclick="addCalc('2')">2</button>
+        <button onclick="addCalc('3')">3</button>
+        <button class="equals" onclick="calculate()">=</button>
+
+        <button class="zero" onclick="addCalc('0')">0</button>
+        <button onclick="addCalc('.')">.</button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- TERMINAL -->
+  <div class="window" id="terminal"
+       style="left:250px;top:80px;width:650px;height:420px">
+
+    <div class="titlebar">
+      <b>⌘ Terminal</b>
+
+      <div>
+        <button class="min">−</button>
+        <button class="max">□</button>
+        <button class="close">×</button>
+      </div>
+    </div>
+
+    <div class="terminal">
+
+      <div id="terminalOutput">
+        Nikssxelo Terminal<br>
+        Type <b>help</b> to see commands.
+      </div>
+
+      <div class="terminal-line">
+        <span>nikssxelo@os:~$</span>
+        <input id="terminalInput" autocomplete="off">
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- SETTINGS -->
+  <div class="window" id="settings"
+       style="left:300px;top:120px;width:450px;height:390px">
+
+    <div class="titlebar">
+      <b>⚙️ Settings</b>
+
+      <div>
+        <button class="min">−</button>
+        <button class="max">□</button>
+        <button class="close">×</button>
+      </div>
+    </div>
+
+    <div class="content settings">
+
+      <h2>Settings</h2>
+
+      <label>
+        Accent colour
+        <input type="color" id="accent">
+      </label>
+
+      <label>
+        Wallpaper
+
+        <select id="wallpaper">
+          <option value="night">Night</option>
+          <option value="blue">Blue</option>
+          <option value="purple">Purple</option>
+          <option value="void">Void</option>
+        </select>
+      </label>
+
+      <button id="resetSettings">
+        Reset Settings
       </button>
 
     </div>
 
+  </div>
 
-    <!-- FILES -->
-    <section
-      id="window-files"
-      class="window"
-      style="left:90px;top:70px;width:520px;height:360px"
-    >
 
-      <header class="titlebar">
-        <strong>📁 Files</strong>
+  <!-- ABOUT -->
+  <div class="window" id="about"
+       style="left:330px;top:150px;width:400px;height:300px">
 
-        <div>
-          <button class="min">—</button>
-          <button class="close">×</button>
-        </div>
-      </header>
+    <div class="titlebar">
+      <b>ℹ️ About</b>
 
-      <div class="window-content file-manager">
+      <div>
+        <button class="min">−</button>
+        <button class="max">□</button>
+        <button class="close">×</button>
+      </div>
+    </div>
 
-        <aside>
-          <button class="side active">Home</button>
-          <button class="side">Documents</button>
-          <button class="side">Music</button>
-        </aside>
+    <div class="about">
 
-        <div class="files-grid">
-
-          <div class="file">
-            📄
-            <span>Welcome.txt</span>
-          </div>
-
-          <div class="file">
-            📁
-            <span>Projects</span>
-          </div>
-
-          <div class="file">
-            🎵
-            <span>Music</span>
-          </div>
-
-          <div class="file">
-            🖼️
-            <span>Wallpapers</span>
-          </div>
-
-        </div>
-
+      <div class="about-logo">
+        N<span>OS</span>
       </div>
 
-    </section>
+      <h2>Nikssxelo OS</h2>
 
+      <p>Made by Nikssxelo</p>
 
-    <!-- NOTES -->
-    <section
-      id="window-notes"
-      class="window"
-      style="left:150px;top:110px;width:560px;height:390px"
-    >
-
-      <header class="titlebar">
-
-        <strong>📝 Notes</strong>
-
-        <div>
-          <button class="min">—</button>
-          <button class="close">×</button>
-        </div>
-
-      </header>
-
-      <div class="window-content notes">
-
-        <textarea
-          id="notes"
-          placeholder="Write something..."
-        ></textarea>
-
-      </div>
-
-    </section>
-
-
-    <!-- TERMINAL -->
-    <section
-      id="window-terminal"
-      class="window"
-      style="left:220px;top:90px;width:610px;height:390px"
-    >
-
-      <header class="titlebar">
-
-        <strong>⌘ Terminal</strong>
-
-        <div>
-          <button class="min">—</button>
-          <button class="close">×</button>
-        </div>
-
-      </header>
-
-      <div class="terminal">
-
-        <div id="terminal-output">
-          Nikssxelo OS Terminal v1.0<br>
-          Type <b>help</b> for commands.
-        </div>
-
-        <div class="terminal-input">
-
-          <span>nikssxelo@os:~$</span>
-
-          <input
-            id="command"
-            autocomplete="off"
-            autofocus
-          >
-
-        </div>
-
-      </div>
-
-    </section>
-
-
-    <!-- SETTINGS -->
-    <section
-      id="window-settings"
-      class="window"
-      style="left:300px;top:130px;width:430px;height:340px"
-    >
-
-      <header class="titlebar">
-
-        <strong>⚙️ Settings</strong>
-
-        <div>
-          <button class="min">—</button>
-          <button class="close">×</button>
-        </div>
-
-      </header>
-
-      <div class="window-content settings">
-
-        <h2>Appearance</h2>
-
-        <label>
-          Accent
-          <input
-            id="accent"
-            type="color"
-            value="#5b8cff"
-          >
-        </label>
-
-        <label>
-          Wallpaper
-
-          <select id="wallpaper">
-            <option value="night">Night</option>
-            <option value="blue">Blue</option>
-            <option value="void">Void</option>
-          </select>
-
-        </label>
-
-        <button id="reset">
-          Reset settings
-        </button>
-
-      </div>
-
-    </section>
-
-
-    <!-- TASKBAR -->
-    <div id="taskbar">
-
-      <button id="start">
-        ✦
-      </button>
-
-      <div id="task-apps"></div>
-
-      <div id="clock"></div>
+      <p class="muted">
+        A personal browser-based operating system.
+      </p>
 
     </div>
 
+  </div>
 
-    <!-- START MENU -->
-    <div id="start-menu" class="hidden">
 
-      <div class="start-title">
-        NIKSSXELO OS
-      </div>
+  <!-- TASKBAR -->
+  <div id="taskbar">
 
-      <button data-open="files">
-        📁 Files
-      </button>
+    <button id="startButton">✦</button>
 
-      <button data-open="notes">
-        📝 Notes
-      </button>
+    <div id="taskApps"></div>
 
-      <button data-open="terminal">
-        ⌘ Terminal
-      </button>
+    <div id="clock"></div>
 
-      <button data-open="settings">
-        ⚙️ Settings
-      </button>
+  </div>
+
+
+  <!-- START MENU -->
+  <div id="startMenu" class="hidden">
+
+    <div class="start-header">
+      <b>NIKSSXELO</b>
+      <span>OS</span>
+    </div>
+
+    <input
+      id="appSearch"
+      placeholder="Search apps..."
+    >
+
+    <div id="appList">
+
+      <button data-app="files">📁 Files</button>
+      <button data-app="notes">📝 Notes</button>
+      <button data-app="calculator">🧮 Calculator</button>
+      <button data-app="terminal">⌘ Terminal</button>
+      <button data-app="settings">⚙️ Settings</button>
+      <button data-app="about">ℹ️ About</button>
 
     </div>
 
-  </main>
+    <div class="power">
 
-  <script src="script.js"></script>
+      <button id="lockButton">🔒 Lock</button>
+      <button id="restartButton">↻ Restart</button>
+      <button id="shutdownButton">⏻ Shut down</button>
+
+    </div>
+
+  </div>
+
+
+  <!-- DESKTOP MENU -->
+  <div id="desktopMenu" class="hidden">
+
+    <button onclick="location.reload()">↻ Refresh</button>
+    <button data-app="settings">⚙️ Settings</button>
+    <button data-app="about">ℹ️ About</button>
+
+  </div>
+
+
+  <!-- LOCK SCREEN -->
+  <div id="lockScreen" class="hidden">
+
+    <div class="lock-logo">NIKSSXELO</div>
+    <div id="lockTime"></div>
+    <button id="unlockButton">Click to unlock</button>
+
+  </div>
+
+</div>
+
+<script src="script.js"></script>
 
 </body>
-  </html>
+        </html>
